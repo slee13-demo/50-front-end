@@ -1,0 +1,13 @@
+{
+  "name": "the-50-front-end-project",
+  "version": "1.0.0",
+  "description": "50 Frontend Projects for learning and improving web development skills",
+  "scripts": {
+    "lint": "eslint '**/*.js'",
+    "lint:fix": "eslint '**/*.js' --fix",
+    "lint:report": "eslint '**/*.js' --format json --output-file eslint-report.json"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}

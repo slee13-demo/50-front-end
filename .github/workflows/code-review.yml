@@ -1,0 +1,62 @@
+name: Code Review with ESLint
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm install eslint --save-dev
+    
+    - name: Run ESLint
+      run: npx eslint "**/*.js" --format json --output-file eslint-report.json || true
+    
+    - name: Comment PR with ESLint results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const results = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+          
+          let comment = '## 🔍 Code Review Results (ESLint)\n\n';
+          let totalIssues = 0;
+          
+          results.forEach(file => {
+            if (file.messages.length > 0) {
+              comment += `### ❌ ${file.filePath}\n`;
+              file.messages.forEach(msg => {
+                totalIssues++;
+                const icon = msg.severity === 'error' ? '🔴' : '🟡';
+                comment += `${icon} Line ${msg.line}: ${msg.message}\n`;
+              });
+              comment += '\n';
+            }
+          });
+          
+          if (totalIssues === 0) {
+            comment += '✅ No ESLint issues found!';
+          } else {
+            comment += `\n**Total Issues: ${totalIssues}**`;
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
