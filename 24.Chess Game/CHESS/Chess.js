@@ -52,13 +52,13 @@ coloring()
 
 //function to not remove the same team element
 
-function reddish() {
+function reddish() 
     document.querySelectorAll('.box').forEach(i1 => {
         if (i1.style.backgroundColor == 'pink') {
 
             document.querySelectorAll('.box').forEach(i2 => {
 
-                if (i2.style.backgroundColor == 'green' && i2.innerText.length !== 0) {
+                if (i2.sty.backgroundColor == 'green' && i2.innerText.length !== 0) {
 
 
                     greenText = i2.innerText
@@ -79,7 +79,7 @@ function reddish() {
                         i2.style.backgroundColor = 'rgb(240, 201, 150)'
                     }
                     if (a % 2 !== 0 && pinkColor == greenColor) {
-                        i2.style.backgroundColor = 'rgb(100, 75, 43)'
+                        i2.stylckgroundColor = 'rgb(100, 75, 43)'
                     }
 
                     // if (pinkColor == greenColor) {
@@ -572,3 +572,4 @@ document.querySelectorAll('.box').forEach(ee => {
         }
     })
 })
+
