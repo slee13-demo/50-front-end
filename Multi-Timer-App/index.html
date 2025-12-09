@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Multi-Timer Manager | TimerMaster Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <i class="fas fa-clock header-icon"></i>
+                <h1 class="app-title">TimerMaster Pro</h1>
+            </div>
+            <div class="header-right">
+                <button class="search-btn" id="searchBtn" aria-label="Search timers">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="add-timer-btn" id="addTimerBtn" aria-label="Add new timer">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text">Add Timer</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar (Initially Hidden) -->
+    <div class="search-container" id="searchContainer">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search timers by name..." aria-label="Search timers">
+            <button class="search-close" id="searchClose" aria-label="Close search">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <div class="controls-left">
+                <div class="sort-control">
+                    <label for="sortSelect">Sort by:</label>
+                    <select id="sortSelect" class="control-select">
+                        <option value="created-desc">Recent First</option>
+                        <option value="created-asc">Oldest First</option>
+                        <option value="name-asc">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="time-asc">Time (Low to High)</option>
+                        <option value="time-desc">Time (High to Low)</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+                <div class="filter-control">
+                    <label for="filterSelect">Filter:</label>
+                    <select id="filterSelect" class="control-select">
+                        <option value="all">All Timers</option>
+                        <option value="running">Running</option>
+                        <option value="paused">Paused</option>
+                        <option value="stopped">Stopped</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="controls-right">
+                <div class="timer-stats" id="timerStats">
+                    <span class="stat-item">Active: <span id="activeCount">0</span></span>
+                    <span class="stat-item">Paused: <span id="pausedCount">0</span></span>
+                    <span class="stat-item">Completed: <span id="completedCount">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer List Container -->
+        <div class="timer-list-container" id="timerListContainer">
+            <div class="timer-list" id="timerList">
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-clock empty-icon"></i>
+                    <h2 class="empty-title">No Timers Yet</h2>
+                    <p class="empty-description">Create your first timer to get started with time management.</p>
+                    <button class="empty-add-btn" id="emptyAddBtn">
+                        <i class="fas fa-plus"></i>
+                        Create First Timer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Summary -->
+        <footer class="footer" id="footer">
+            <div class="footer-content">
+                <span id="footerSummary">Ready to create your first timer</span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Timer Creation/Edit Modal -->
+    <div class="modal-overlay" id="timerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Create New Timer</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="timerForm" class="timer-form">
+                    <!-- Timer Name -->
+                    <div class="form-group">
+                        <label for="timerName">Timer Name*</label>
+                        <input type="text" id="timerName" class="form-input" maxlength="50" placeholder="e.g., Work Session, Break Time..." required>
+                        <span class="error-message" id="nameError"></span>
+                    </div>
+
+                    <!-- Duration -->
+                    <div class="form-group">
+                        <label>Duration*</label>
+                        <div class="duration-inputs">
+                            <div class="duration-item">
+                                <label for="hours">Hours</label>
+                                <select id="hours" class="duration-select">
+                                    <option value="0">00</option>
+                                </select>
+                            </div>
+                            <div class="duration-item">
+                                <label for="minutes">Minutes</label>
+                                <select id="minutes" class="duration-select">
+                                    <option value="0">00</option>
+                                </select>
+                            </div>
+                            <div class="duration-item">
+                                <label for="seconds">Seconds</label>
+                                <select id="seconds" class="duration-select">
+                                    <option value="0">00</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span class="error-message" id="durationError"></span>
+                    </div>
+
+                    <!-- Alarm Settings -->
+                    <div class="form-group">
+                        <label>Alarm Settings</label>
+                        <div class="alarm-settings">
+                            <div class="alarm-row">
+                                <div class="alarm-item">
+                                    <label for="alarmSound">Sound:</label>
+                                    <select id="alarmSound" class="alarm-select">
+                                        <option value="chime">Chime</option>
+                                        <option value="bell">Bell</option>
+                                        <option value="melody">Melody</option>
+                                        <option value="beep">Beep</option>
+                                        <option value="buzz">Buzz</option>
+                                    </select>
+                                </div>
+                                <div class="alarm-item volume-item">
+                                    <label for="volume">Volume:</label>
+                                    <div class="volume-control">
+                                        <input type="range" id="volume" class="volume-slider" min="0" max="100" value="50">
+                                        <span class="volume-value">50%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alarm-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="repeatAlarm">
+                                    <span class="checkmark"></span>
+                                    Repeat every 5 minutes
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="browserNotification">
+                                    <span class="checkmark"></span>
+                                    Browser notification
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description (Optional)</label>
+                        <textarea id="description" class="form-textarea" placeholder="Add notes about this timer..." maxlength="200"></textarea>
+                        <span class="char-count">0/200</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" form="timerForm" class="btn btn-primary" id="submitBtn">Create Timer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle delete-icon"></i>
+                    Delete Timer
+                </h2>
+            </div>
+            <div class="modal-body">
+                <p class="delete-message">
+                    Are you sure you want to delete timer "<span id="deleteTimerName"></span>"?
+                </p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="deleteCancel">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteConfirm">Delete Timer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer">
+        <!-- Toast messages will be added here dynamically -->
+    </div>
+
+    <!-- Audio for alarms -->
+    <audio id="alarmAudio" preload="auto">
+        <source src="./sounds/chime.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
