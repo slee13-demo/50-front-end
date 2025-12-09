@@ -84,6 +84,96 @@
         allowPageScroll: "vertical"
     });
 
+    // Enhanced Auto-rotation Controls
+    var carouselElement = $('#carousel');
+    var pauseBtn = $('#pauseBtn');
+    var playBtn = $('#playBtn');
+    var isPlaying = true;
+    var autoRotationInterval = 5000; // 5 seconds
+
+    // Initialize auto-rotation
+    function initCarousel() {
+        carouselElement.carousel({
+            interval: autoRotationInterval,
+            ride: 'carousel'
+        });
+    }
+
+    // Pause functionality
+    pauseBtn.on('click', function() {
+        carouselElement.carousel('pause');
+        isPlaying = false;
+        pauseBtn.hide();
+        playBtn.show();
+        
+        // Add visual feedback
+        carouselElement.addClass('carousel-paused');
+        
+        // Announce to screen readers
+        announceToScreenReader('배너 자동 회전이 일시정지되었습니다');
+    });
+
+    // Resume functionality
+    playBtn.on('click', function() {
+        carouselElement.carousel('cycle');
+        isPlaying = true;
+        playBtn.hide();
+        pauseBtn.show();
+        
+        // Remove visual feedback
+        carouselElement.removeClass('carousel-paused');
+        
+        // Announce to screen readers
+        announceToScreenReader('배너 자동 회전이 재개되었습니다');
+    });
+
+    // Keyboard accessibility
+    pauseBtn.on('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).click();
+        }
+    });
+
+    playBtn.on('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            $(this).click();
+        }
+    });
+
+    // Pause on hover for accessibility
+    carouselElement.on('mouseenter', function() {
+        if (isPlaying) {
+            $(this).carousel('pause');
+        }
+    });
+
+    // Resume when mouse leaves (only if not manually paused)
+    carouselElement.on('mouseleave', function() {
+        if (isPlaying) {
+            $(this).carousel('cycle');
+        }
+    });
+
+    // Screen reader announcements
+    function announceToScreenReader(message) {
+        var announcement = $('<div>')
+            .attr('aria-live', 'polite')
+            .attr('aria-atomic', 'true')
+            .addClass('sr-only')
+            .text(message);
+        
+        $('body').append(announcement);
+        
+        setTimeout(function() {
+            announcement.remove();
+        }, 1000);
+    }
+
+    // Initialize the carousel
+    initCarousel();
+
     // Skills section
     $('.skills').waypoint(function () {
         $('.progress .progress-bar').each(function () {

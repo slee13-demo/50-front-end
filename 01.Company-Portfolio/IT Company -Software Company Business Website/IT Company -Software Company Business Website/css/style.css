@@ -243,6 +243,140 @@ h6 {
     color: #1dbf73;
 }
 
+/* Auto-rotation Controls Styling */
+.slider .carousel-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.slider .carousel-pause-btn,
+.slider .carousel-play-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #1dbf73;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #1dbf73;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.slider .carousel-pause-btn:hover,
+.slider .carousel-play-btn:hover {
+    background: #1dbf73;
+    color: #ffffff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(29, 191, 115, 0.3);
+}
+
+.slider .carousel-pause-btn:focus,
+.slider .carousel-play-btn:focus {
+    outline: 3px solid #1dbf73;
+    outline-offset: 2px;
+}
+
+.slider .carousel-pause-btn:active,
+.slider .carousel-play-btn:active {
+    transform: scale(0.95);
+}
+
+/* Visual feedback for paused state */
+.slider .carousel.carousel-paused::after {
+    content: '일시정지됨';
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .slider .carousel-pause-btn,
+    .slider .carousel-play-btn {
+        background: #ffffff;
+        border: 3px solid #000000;
+        color: #000000;
+    }
+    
+    .slider .carousel-pause-btn:hover,
+    .slider .carousel-play-btn:hover {
+        background: #000000;
+        color: #ffffff;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .slider .carousel-pause-btn,
+    .slider .carousel-play-btn {
+        transition: none;
+    }
+    
+    .slider .carousel-pause-btn:hover,
+    .slider .carousel-play-btn:hover {
+        transform: none;
+    }
+    
+    .slider .carousel-fade .carousel-inner .active,
+    .slider .carousel-fade .carousel-inner .carousel-item-next.carousel-item-left,
+    .slider .carousel-fade .carousel-inner .carousel-item-prev.carousel-item-right {
+        transition: none;
+    }
+}
+
+/* Responsive adjustments for controls */
+@media (max-width: 768px) {
+    .slider .carousel-controls {
+        top: 15px;
+        right: 15px;
+    }
+    
+    .slider .carousel-pause-btn,
+    .slider .carousel-play-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .slider .carousel.carousel-paused::after {
+        bottom: 15px;
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+}
+
 
 
 /* ------------------ Menu Style ------------------- */
