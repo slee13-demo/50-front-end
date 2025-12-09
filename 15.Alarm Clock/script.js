@@ -1,18 +1,73 @@
 const currentTime = document.querySelector("h1"),
 content = document.querySelector(".content"),
-selectMenu = document.querySelectorAll("select"),
 setAlarmBtn = document.querySelector("button"),
 alarmList = document.querySelector("#alarmList"),
 editModal = document.querySelector("#editModal"),
 editHour = document.querySelector("#editHour"),
 editMinute = document.querySelector("#editMinute"),
-editAMPM = document.querySelector("#editAMPM");
+editAMPM = document.querySelector("#editAMPM"),
+bgColorSelect = document.querySelector("#bgColorSelect");
 
 let alarms = [],
 activeAlarmId = null,
 editingAlarmId = null,
+selectMenu = null,
 ringtone = new Audio("./files/ringtone.mp3"),
-MAX_ALARMS = 10;
+MAX_ALARMS = 10,
+currentBgColor = "pastel-yellow";
+
+// Initialize select menus
+function initializeSelectMenus() {
+    selectMenu = document.querySelectorAll(".content select");
+    
+    // Populate hour dropdown (main form)
+    for (let i = 12; i > 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        selectMenu[0].firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    
+    // Populate minute dropdown (main form)
+    for (let i = 59; i >= 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        selectMenu[1].firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    
+    // Populate AM/PM dropdown (main form)
+    for (let i = 2; i > 0; i--) {
+        let ampm = i == 1 ? "AM" : "PM";
+        let option = `<option value="${ampm}">${ampm}</option>`;
+        selectMenu[2].firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    
+    // Populate edit modal dropdowns
+    populateEditSelectOptions();
+}
+
+// Helper function to populate select options for edit modal
+function populateEditSelectOptions() {
+    // Populate edit hour dropdown
+    for (let i = 12; i > 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        editHour.firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    
+    // Populate edit minute dropdown
+    for (let i = 59; i >= 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        editMinute.firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    
+    // Populate edit AM/PM dropdown
+    for (let i = 2; i > 0; i--) {
+        let ampm = i == 1 ? "AM" : "PM";
+        let option = `<option value="${ampm}">${ampm}</option>`;
+        editAMPM.firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+}
 
 // Load alarms from localStorage
 function loadAlarms() {
@@ -22,6 +77,37 @@ function loadAlarms() {
         renderAlarmList();
         updateAlarmCount();
     }
+}
+
+// Load background color preference
+function loadBackgroundColor() {
+    const saved = localStorage.getItem("bgColor");
+    if (saved) {
+        currentBgColor = saved;
+        applyBackgroundColor(saved);
+    } else {
+        // Apply default pastel yellow
+        applyBackgroundColor("pastel-yellow");
+        bgColorSelect.value = "pastel-yellow";
+    }
+}
+
+// Apply background color to body
+function applyBackgroundColor(colorName) {
+    document.body.className = `bg-${colorName}`;
+    currentBgColor = colorName;
+}
+
+// Save background color preference
+function saveBackgroundColor(colorName) {
+    localStorage.setItem("bgColor", colorName);
+    applyBackgroundColor(colorName);
+}
+
+// Handle background color selection change
+function handleBgColorChange() {
+    const selectedColor = bgColorSelect.value;
+    saveBackgroundColor(selectedColor);
 }
 
 // Save alarms to localStorage
@@ -39,61 +125,11 @@ function formatTime(hour, minute, ampm) {
     return `${hour}:${minute} ${ampm}`;
 }
 
-// Helper function to populate select options
-function populateSelectOptions(selectElement, isAmpm = false) {
-    if (isAmpm) {
-        for (let i = 2; i > 0; i--) {
-            let ampm = i == 1 ? "AM" : "PM";
-            let option = `<option value="${ampm}">${ampm}</option>`;
-            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
-        }
-    } else if (selectElement === selectMenu[0] || selectElement === editHour) {
-        // Hour dropdown
-        for (let i = 12; i > 0; i--) {
-            i = i < 10 ? `0${i}` : i;
-            let option = `<option value="${i}">${i}</option>`;
-            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
-        }
-    } else {
-        // Minute dropdown
-        for (let i = 59; i >= 0; i--) {
-            i = i < 10 ? `0${i}` : i;
-            let option = `<option value="${i}">${i}</option>`;
-            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
-        }
-    }
-}
-
-// Populate hour dropdown (main form)
-for (let i = 12; i > 0; i--) {
-    i = i < 10 ? `0${i}` : i;
-    let option = `<option value="${i}">${i}</option>`;
-    selectMenu[0].firstElementChild.insertAdjacentHTML("afterend", option);
-}
-
-// Populate minute dropdown (main form)
-for (let i = 59; i >= 0; i--) {
-    i = i < 10 ? `0${i}` : i;
-    let option = `<option value="${i}">${i}</option>`
-    selectMenu[1].firstElementChild.insertAdjacentHTML("afterend", option);
-}
-
-// Populate AM/PM dropdown (main form)
-for (let i = 2; i > 0; i--) {
-    let ampm = i == 1 ? "AM" : "PM";
-    let option = `<option value="${ampm}">${ampm}</option>`;
-    selectMenu[2].firstElementChild.insertAdjacentHTML("afterend", option);
-
-// Populate edit modal dropdowns
-populateSelectOptions(editHour);
-populateSelectOptions(editMinute);
-populateSelectOptions(editAMPM, true);
-
 // Check alarms every second
 setInterval(() => {
     let date = new Date(),
     h = date.getHours(),
-    m = dategeMinutes(),
+    m = date.getMinutes(),
     s = date.getSeconds(),
     ampm = "AM";
     if(h >= 12) {
@@ -101,7 +137,7 @@ setInterval(() => {
         ampm = "PM";
     }
     h = h == 0 ? h = 12 : h;
-    h = h < 10  "0" + h : h;
+    h = h < 10 ? "0" + h : h;
     m = m < 10 ? "0" + m : m;
     s = s < 10 ? "0" + s : s;
     currentTime.innerText = `${h}:${m}:${s} ${ampm}`;
@@ -275,5 +311,10 @@ function saveEditedAlarm() {
 // Set alarm button click handler
 setAlarmBtn.addEventListener("click", addAlarm);
 
-// Load alarms on page load
+// Background color selector event listener
+bgColorSelect.addEventListener("change", handleBgColorChange);
+
+// Initialize and load on page load
+initializeSelectMenus();
 loadAlarms();
+loadBackgroundColor();
