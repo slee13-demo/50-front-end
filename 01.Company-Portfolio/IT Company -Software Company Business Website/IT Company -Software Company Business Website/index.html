@@ -60,14 +60,24 @@
         <!-- Slider Section Start-->
         <section class="slider">
             <div class="slider-container">
-                <div id="carousel" class="carousel  slide carousel-fade" data-ride="carousel">
+                <div id="carousel" class="carousel  slide carousel-fade" data-ride="carousel" data-interval="5000">
+                    
+                    <!-- Auto-rotation Controls -->
+                    <div class="carousel-controls" aria-label="배너 제어">
+                        <button id="pauseBtn" class="carousel-pause-btn" aria-label="배너 자동 회전 일시정지" title="일시정지">
+                            <i class="ion-md-pause"></i>
+                        </button>
+                        <button id="playBtn" class="carousel-play-btn" aria-label="배너 자동 회전 재개" title="재개" style="display: none;">
+                            <i class="ion-md-play"></i>
+                        </button>
+                    </div>
 
                     <ol class="carousel-indicators"></ol>
 
                     <div class="carousel-inner" role="listbox">
 
                         <div class="carousel-item active">
-                            <div class="carousel-background"><img src="img/slider-1.jpg" alt=""></div>
+                            <div class="carousel-background"><img src="img/slider-1.jpg" alt="웹 개발 서비스를 보여주는 배너 이미지"></div>
                             <div class="carousel-container">
                                 <div class="carousel-content">
                                     <h2>Web Development</h2>
@@ -80,7 +90,7 @@
                         </div>
 
                         <div class="carousel-item">
-                            <div class="carousel-background"><img src="img/slider-2.jpg" alt=""></div>
+                            <div class="carousel-background"><img src="img/slider-2.jpg" alt="앱 개발 서비스를 보여주는 배너 이미지"></div>
                             <div class="carousel-container">
                                 <div class="carousel-content">
                                     <h2>App Development</h2>
@@ -93,7 +103,7 @@
                         </div>
 
                         <div class="carousel-item">
-                            <div class="carousel-background"><img src="img/slider-3.jpg" alt=""></div>
+                            <div class="carousel-background"><img src="img/slider-3.jpg" alt="게임 개발 서비스를 보여주는 배너 이미지"></div>
                             <div class="carousel-container">
                                 <div class="carousel-content">
                                     <h2>Game Development</h2>
