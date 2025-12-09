@@ -150,3 +150,128 @@ body{
   padding: 20px;
   font-size: 14px;
 }
+.alarm-count{
+  font-size: 14px;
+  color: #999;
+  font-weight: 400;
+}
+/* Modal Styles */
+.modal{
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden{
+  display: none;
+}
+.modal:not(.hidden){
+  display: flex;
+}
+.modal-content{
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.modal-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.modal-header h2{
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+.close-modal{
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.close-modal:hover{
+  color: #333;
+}
+.modal-body{
+  padding: 20px;
+}
+.form-group{
+  margin-bottom: 15px;
+}
+.form-group label{
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+.form-group select{
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+}
+.form-group select:focus{
+  outline: none;
+  border-color: #4A98F7;
+  box-shadow: 0 0 0 3px rgba(74, 152, 247, 0.1);
+}
+.modal-footer{
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  justify-content: flex-end;
+}
+.btn-cancel{
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-cancel:hover{
+  background: #f5f5f5;
+}
+.btn-save{
+  padding: 10px 20px;
+  border: none;
+  background: #4A98F7;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-save:hover{
+  background: #1976d2;
+}
+.edit-alarm{
+  background: #2196f3;
+  color: white;
+  margin-right: 5px;
+}
+.edit-alarm:hover{
+  background: #0b7dda;
+}

@@ -2,11 +2,17 @@ const currentTime = document.querySelector("h1"),
 content = document.querySelector(".content"),
 selectMenu = document.querySelectorAll("select"),
 setAlarmBtn = document.querySelector("button"),
-alarmList = document.querySelector("#alarmList");
+alarmList = document.querySelector("#alarmList"),
+editModal = document.querySelector("#editModal"),
+editHour = document.querySelector("#editHour"),
+editMinute = document.querySelector("#editMinute"),
+editAMPM = document.querySelector("#editAMPM");
 
 let alarms = [],
 activeAlarmId = null,
-ringtone = new Audio("./files/ringtone.mp3");
+editingAlarmId = null,
+ringtone = new Audio("./files/ringtone.mp3"),
+MAX_ALARMS = 10;
 
 // Load alarms from localStorage
 function loadAlarms() {
@@ -14,6 +20,7 @@ function loadAlarms() {
     if (saved) {
         alarms = JSON.parse(saved);
         renderAlarmList();
+        updateAlarmCount();
     }
 }
 
@@ -32,25 +39,55 @@ function formatTime(hour, minute, ampm) {
     return `${hour}:${minute} ${ampm}`;
 }
 
-// Populate hour dropdown
+// Helper function to populate select options
+function populateSelectOptions(selectElement, isAmpm = false) {
+    if (isAmpm) {
+        for (let i = 2; i > 0; i--) {
+            let ampm = i == 1 ? "AM" : "PM";
+            let option = `<option value="${ampm}">${ampm}</option>`;
+            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
+        }
+    } else if (selectElement === selectMenu[0] || selectElement === editHour) {
+        // Hour dropdown
+        for (let i = 12; i > 0; i--) {
+            i = i < 10 ? `0${i}` : i;
+            let option = `<option value="${i}">${i}</option>`;
+            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
+        }
+    } else {
+        // Minute dropdown
+        for (let i = 59; i >= 0; i--) {
+            i = i < 10 ? `0${i}` : i;
+            let option = `<option value="${i}">${i}</option>`;
+            selectElement.firstElementChild.insertAdjacentHTML("afterend", option);
+        }
+    }
+}
+
+// Populate hour dropdown (main form)
 for (let i = 12; i > 0; i--) {
     i = i < 10 ? `0${i}` : i;
     let option = `<option value="${i}">${i}</option>`;
     selectMenu[0].firstElementChild.insertAdjacentHTML("afterend", option);
 }
 
-// Populate minute dropdown
+// Populate minute dropdown (main form)
 for (let i = 59; i >= 0; i--) {
     i = i < 10 ? `0${i}` : i;
     let option = `<option value="${i}">${i}</option>`
     selectMenu[1].firstElementChild.insertAdjacentHTML("afterend", option);
 }
 
-// Populate AM/PM dropdown
+// Populate AM/PM dropdown (main form)
 for (let i = 2; i > 0; i--) {
     let ampm = i == 1 ? "AM" : "PM";
     let option = `<option value="${ampm}">${ampm}</option>`;
     selectMenu[2].firstElementChild.insertAdjacentHTML("afterend", option);
+
+// Populate edit modal dropdowns
+populateSelectOptions(editHour);
+populateSelectOptions(editMinute);
+populateSelectOptions(editAMPM, true);
 
 // Check alarms every second
 setInterval(() => {
@@ -100,6 +137,7 @@ function renderAlarmList() {
                 <div class="alarm-label">${alarm.enabled ? "Active" : "Inactive"}</div>
             </div>
             <div class="alarm-actions">
+                <button class="edit-alarm" onclick="openEditModal(${alarm.id})">Edit</button>
                 <button class="toggle-alarm" onclick="toggleAlarm(${alarm.id})">${alarm.enabled ? "Stop" : "Start"}</button>
                 <button class="delete-alarm" onclick="deleteAlarm(${alarm.id})">Delete</button>
             </div>
@@ -108,8 +146,21 @@ function renderAlarmList() {
     });
 }
 
+// Update alarm count display
+function updateAlarmCount() {
+    const alarmCount = document.querySelector(".alarm-count");
+    if (alarmCount) {
+        alarmCount.textContent = `(${alarms.length}/${MAX_ALARMS})`;
+    }
+}
+
 // Add new alarm
 function addAlarm() {
+    // Check maximum alarms limit
+    if (alarms.length >= MAX_ALARMS) {
+        return alert(`Maximum number of alarms (${MAX_ALARMS}) reached! Please delete an alarm first.`);
+    }
+    
     let time = `${selectMenu[0].value}:${selectMenu[1].value} ${selectMenu[2].value}`;
     
     if (time.includes("Hour") || time.includes("Minute") || time.includes("AM/PM")) {
@@ -130,6 +181,7 @@ function addAlarm() {
     alarms.push(newAlarm);
     saveAlarms();
     renderAlarmList();
+    updateAlarmCount();
     
     // Reset form
     selectMenu[0].value = "Hour";
@@ -160,11 +212,63 @@ function deleteAlarm(id) {
         alarms = alarms.filter(a => a.id !== id);
         saveAlarms();
         renderAlarmList();
+        updateAlarmCount();
         
         if (activeAlarmId === id) {
             ringtone.pause();
             activeAlarmId = null;
         }
+    }
+}
+
+// Open edit modal
+function openEditModal(id) {
+    editingAlarmId = id;
+    const alarm = alarms.find(a => a.id === id);
+    
+    if (!alarm) return;
+    
+    const [hour, minute] = alarm.time.split(":");
+    const [mins, ampm] = minute.split(" ");
+    
+    editHour.value = hour;
+    editMinute.value = mins;
+    editAMPM.value = ampm;
+    
+    editModal.classList.remove("hidden");
+}
+
+// Close edit modal
+function closeEditModal() {
+    editModal.classList.add("hidden");
+    editingAlarmId = null;
+    editHour.value = "Hour";
+    editMinute.value = "Minute";
+    editAMPM.value = "AM/PM";
+}
+
+// Save edited alarm
+function saveEditedAlarm() {
+    if (!editingAlarmId) return;
+    
+    const newTime = `${editHour.value}:${editMinute.value} ${editAMPM.value}`;
+    
+    if (newTime.includes("Hour") || newTime.includes("Minute") || newTime.includes("AM/PM")) {
+        return alert("Please select valid time values!");
+    }
+    
+    // Check if new time already exists (excluding current alarm)
+    if (alarms.some(alarm => alarm.time === newTime && alarm.id !== editingAlarmId)) {
+        return alert("An alarm for this time already exists!");
+    }
+    
+    const alarm = alarms.find(a => a.id === editingAlarmId);
+    if (alarm) {
+        alarm.time = newTime;
+        saveAlarms();
+        renderAlarmList();
+        closeEditModal();
+        alert(`Alarm updated to ${newTime}`);
     }
 }
 
